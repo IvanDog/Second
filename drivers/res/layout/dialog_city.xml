@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+     <TextView
+        android:id="@+id/tv_current_city_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" 
+        android:textColor="#E94509"
+        android:text="当前城市"/>
+     <Button
+        android:id="@+id/bt_current_city"
+        android:layout_below="@+id/tv_current_city_title"
+        android:background="#BFBFBF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" 
+        android:textColor="#E94509"
+        android:text="天津"/>
+     <TextView
+        android:id="@+id/tv_city_title"
+        android:layout_below="@+id/bt_current_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" 
+        android:textColor="#E94509"
+        android:text="全国热门城市"/>
+    <TableLayout
+        android:id="@+id/table_city"
+        android:layout_below="@+id/tv_city_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" 
+        android:stretchColumns="*"
+        android:weightSum="3" >
+        
+        <TableRow
+            android:id="@+id/cityTableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+            <Button
+                android:id="@+id/bt_city_tj"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="天津"/>
+            <Button
+                android:id="@+id/bt_city_bj"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="北京"/>
+             <Button
+                android:id="@+id/bt_city_sh"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="上海"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/cityTableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+            <Button
+                android:id="@+id/bt_city_sz"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="深圳"/>
+             <Button
+                android:id="@+id/bt_city_gz"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="广州"/>
+             <Button
+                android:id="@+id/bt_city_nj"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="南京"/>
+        </TableRow>
+        
+        <TableRow
+            android:id="@+id/cityTableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight="1" >
+            <Button
+                android:id="@+id/bt_city_hz"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+               android:text="杭州"/>
+            <Button
+                android:id="@+id/bt_city_xm"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="厦门"/>
+             <Button
+                android:id="@+id/bt_city_zz"
+                android:background="#BFBFBF"
+                android:textColor="#E94509"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="郑州"/>
+        </TableRow>
+</TableLayout>
+
+</RelativeLayout>

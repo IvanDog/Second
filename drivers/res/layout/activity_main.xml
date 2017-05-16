@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+              android:background="#eee"  
+              android:layout_width="match_parent"  
+              android:layout_height="wrap_content"  
+              android:orientation="vertical">  
+  
+    <LinearLayout  
+        android:id="@+id/linear_location_title"
+        android:background="#E94509"  
+        android:layout_weight="1"  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:orientation="horizontal">  
+        <TextView 
+            android:id="@+id/tv_city"
+            android:layout_weight="1"  
+            android:layout_width="0dp"  
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"  
+            android:paddingTop="25dp" 
+             android:paddingLeft="5dp" 
+            android:textSize="12sp"
+            android:clickable="true"
+            android:drawableRight="@drawable/ic_arrow_drop_down_black_18dp"
+            android:text="天津"  />
+        <FrameLayout  
+            android:layout_weight="4"  
+            android:layout_width="0dp"  
+            android:layout_height="wrap_content">  
+            <AutoCompleteTextView  
+                android:id="@+id/ac_search_input"  
+                android:layout_gravity="center_vertical"  
+                android:layout_margin="10dp"  
+                android:paddingTop="10dp"
+                android:drawableLeft="@drawable/ic_action_search"  
+                android:drawablePadding="5dp"  
+                android:layout_width="match_parent"  
+                android:layout_height="wrap_content"  
+                android:textSize="15sp"  
+                android:imeOptions="actionSearch"  
+                android:inputType="text"  
+                android:hint="请输入地点"/>  
+            <ImageView  
+                android:id="@+id/iv_search_delete"
+                android:layout_marginRight="20dp"  
+                android:src="@drawable/ic_backspace_white_18dp"    
+                android:layout_gravity="right|center_vertical"  
+                android:layout_width="wrap_content"  
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:clickable="true"/>  
+        </FrameLayout> 
+        <ImageView 
+                android:layout_weight="0.5"  
+                android:id="@+id/iv_parking_list"  
+                android:src="@drawable/ic_format_align_justify_black_24dp"
+                android:layout_gravity="right|center_vertical"  
+                android:clickable="true"
+                android:layout_width="wrap_content"  
+                android:layout_height="wrap_content"/> 
+    </LinearLayout>
+     
+      <FrameLayout
+         android:id="@+id/frame_container"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_below="@+id/linear_location_title"
+         android:layout_above="@+id/linear_buttons_main"> 
+         <com.amap.api.maps2d.MapView
+             android:id="@+id/map"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:clickable="true"
+             android:enabled="true" />
+         <TextView 
+             android:id="@+id/tv_poi_name"
+             android:layout_height="wrap_content" 
+             android:layout_width="wrap_content"
+             android:paddingTop="10dp"
+             android:paddingBottom="10dp"
+             android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+             android:textSize="20sp"  />
+        <ListView   
+         android:id="@+id/list_search"  
+         android:layout_below="@+id/linear_location_title"
+         android:layout_above="@+id/linear_buttons_main"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:divider="#EBEBEB"        
+         android:dividerHeight="1px"
+         android:visibility="gone" />
+      </FrameLayout> 
+     <ListView   
+         android:id="@+id/list_main"  
+         android:layout_below="@+id/linear_location_title"
+         android:layout_above="@+id/linear_buttons_main"
+         android:layout_width="match_parent"
+         android:layout_height="220dp"
+         android:divider="#FFF"        
+         android:dividerHeight="2px" 
+         android:visibility="gone"/>
+     <LinearLayout
+         android:id="@+id/linear_buttons_main"  
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="#E94509"
+          android:gravity="bottom"
+          android:layout_alignParentBottom="true"
+         android:orientation="horizontal" >
+        <LinearLayout
+            android:layout_weight="1"  
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+            android:gravity="bottom|center"
+            android:orientation="vertical" >
+            <ImageButton 
+                android:layout_weight="1"  
+                android:id="@+id/imgbt_find"
+                android:layout_width="wrap_content"  
+                android:layout_height="0dp"
+                android:background="@drawable/ic_time_to_leave_white_36dp" />
+            <TextView 
+                android:layout_weight="1" 
+                android:layout_height="0dp" 
+                android:layout_width="wrap_content"  
+                android:text="找车位"  />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"  
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="bottom|center"
+            android:orientation="vertical" >
+            <ImageButton 
+                android:layout_weight="1"  
+                android:id="@+id/imgbt_pay"
+                android:layout_width="wrap_content"  
+                android:layout_height="0dp"
+                android:background="@drawable/ic_account_balance_wallet_white_36dp" />
+            <TextView 
+                android:layout_weight="1" 
+                android:layout_height="0dp" 
+                android:layout_width="wrap_content"  
+                android:text="  付费"  />
+        </LinearLayout>
+        <LinearLayout
+           android:layout_weight="1"  
+           android:layout_width="0dp"
+           android:layout_height="wrap_content"
+           android:gravity="bottom|center"
+           android:orientation="vertical" >
+            <ImageButton 
+                android:layout_weight="1"  
+                android:id="@+id/imgbt_mine"
+                android:layout_width="wrap_content"  
+                android:layout_height="0dp"
+                android:background="@drawable/ic_account_box_white_36dp" />
+            <TextView 
+                android:layout_weight="1" 
+                android:layout_height="0dp" 
+                android:layout_width="wrap_content"  
+                android:text="  我的"  />
+        </LinearLayout>
+      </LinearLayout>
+</RelativeLayout>

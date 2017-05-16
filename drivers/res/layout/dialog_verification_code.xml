@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout 
+    android:layout_width="match_parent" 
+    android:layout_height="wrap_content" 
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+            <EditText
+                android:id="@+id/et_input_tele_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+                android:hint="@string/notify_input_tele_number"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:singleLine="true" />
+          <LinearLayout
+            android:id="@+id/linear_input_tele_verification"
+            android:layout_below="@+id/et_input_tele_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">  
+            <EditText
+                android:id="@+id/et_input_verification_code"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+                android:hint="@string/notify_input_verification_code"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true" />
+            <Button 
+                android:id="@+id/bt_apply_verification_code"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="@string/apply_verification_code" />
+          </LinearLayout>
+          <CheckBox 
+                android:id="@+id/cb_agree"
+                android:layout_below="@+id/linear_input_tele_verification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#E94509"
+                android:text="@string/agree_clause" />
+          <Button 
+                android:id="@+id/bt_next_register_step"
+                android:layout_below="@+id/cb_agree"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/next_register_step" />
+</RelativeLayout>
