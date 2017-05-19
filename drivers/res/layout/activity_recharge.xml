@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background = "#FFFFFF"
+    android:orientation="vertical" >
+       <TextView
+        android:id="@+id/tv_wallet_information_title_recharge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:text="可用余额（元）"
+        android:textSize="20sp"
+        android:background="#EBEBEB"/>
+       <TextView
+        android:id="@+id/tv_wallet_detail_money_recharge"
+        android:layout_below="@+id/tv_wallet_information_title_recharge"        
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:text="0.00"
+        android:textSize="25sp"
+        android:textColor="#E94509"
+        android:background="#EBEBEB"/>
+         <LinearLayout 
+        android:id="@+id/linear_payment_money_number_recharge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:layout_below="@+id/tv_wallet_detail_money_recharge"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/bt_payment_twenty_recharge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:text="20"/>
+        <Button
+            android:id="@+id/bt_payment_fifty_recharge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:text="50"/>
+        <Button
+            android:id="@+id/bt_payment_hundred_recharge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_selector"
+            android:text="100"/>
+        </LinearLayout>
+        
+        <LinearLayout 
+          android:id="@+id/linear_payment_information_recharge"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/linear_payment_money_number_recharge"
+          android:orientation="horizontal">
+               <TextView 
+                android:id="@+id/tv_payment_type_title_leaving"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:gravity="left"
+                android:text="支付方式"
+                android:textSize="15sp"/>
+              <RadioGroup  
+                android:id="@+id/rg_payment_type_recharge"  
+                android:layout_width="fill_parent"  
+                android:layout_height="wrap_content"  
+                android:checkedButton="@+id/paymentType"  
+                android:orientation="vertical">  
+                   <RadioButton  
+                    android:id="@+id/rb_alipay_payment_recharge"  
+                    android:layout_width="wrap_content"  
+                    android:layout_height="wrap_content"  
+                    android:text="支付宝"/>  
+                   <RadioButton  
+                    android:id="@+id/rb_wechatpay_payment_recharge"  
+                    android:layout_width="wrap_content"  
+                    android:layout_height="wrap_content"  
+                    android:text="微信"/>  
+              </RadioGroup>  
+
+        </LinearLayout>
+
+        <LinearLayout
+          android:id="@+id/parking_detail_buttons_recharge"
+          android:layout_below="@+id/linear_payment_information"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:gravity="bottom"
+          android:layout_alignParentBottom="true">
+            <Button 
+              android:id="@+id/bt_confirm_payment_leaving_recharge"
+              android:background = "@drawable/ic_ok"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:gravity="center"
+              android:textColor="#E94509"
+              android:text="确认支付" />
+            <Button 
+              android:id="@+id/bt_cancel_payment_recharge"
+              android:background = "@drawable/ic_ok"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:gravity="center"
+              android:textColor="#E94509"
+              android:text="取消" />
+    </LinearLayout>
+</RelativeLayout>

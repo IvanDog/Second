@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -68,6 +69,8 @@ public class LoginActivity extends Activity {
 	private UserDbAdapter mUserDbAdapter;
 	private Button mApplyVerificationCodeBT;
 	private AlertDialog mDialog;
+	private Thread mTimeThread;
+	private boolean mUpdateTime =true;
     private static final String SAVE_FILE_NAME = "save_spref";
     private static final int EVENT_EXIST_NUMBER=101;
     private static final int EVENT_EMPTY_TELE_NUMBER=102;
@@ -217,6 +220,9 @@ public class LoginActivity extends Activity {
                     break;
                 case EVENT_REGISTER_SUCCESS:
                     showSetPasswdDialog(false);
+                    mUpdateTime=false;
+                    mApplyVerificationCodeBT.setText("验证码");
+                    mApplyVerificationCodeBT.setEnabled(true);
                 	break;
                 case EVENT_EMPTY_PASSWD:
                 	Toast.makeText(getApplicationContext(), "密码不可为空", Toast.LENGTH_SHORT).show();
@@ -287,7 +293,7 @@ public class LoginActivity extends Activity {
                 		mHandler.sendMessage(msg);
             		}else{
                 		mTeleNumber = teleNumberET.getText().toString();
-                    	long  result = mUserDbAdapter.insertDriver(teleNumberET.getText().toString(), null, null, null, 0, 0);
+                    	long  result = mUserDbAdapter.insertDriver(teleNumberET.getText().toString(), null, null, null, 0, 1, null, null);
                     	if(result != -1){
                     		Log.e("yifan","insert ok");
                     		Message msg = new Message();
@@ -308,7 +314,7 @@ public class LoginActivity extends Activity {
 	        public void run () {
 	            do {
 	                try {
-	                	while(time>=0){
+	                	while(time>=0 && mUpdateTime){
 		                    Thread.sleep(1000);
 		                    Message msg = new Message();
 		                    msg.what = EVENT_UPDATE_TIME;
@@ -326,7 +332,8 @@ public class LoginActivity extends Activity {
 			@Override
 		    public void onClick(View v) {
 				mApplyVerificationCodeBT.setEnabled(false);
-				new TimeThread().start();
+				mTimeThread=new TimeThread();
+				mTimeThread.start();
 		    }
 	     });
 		mDialog = VCdialogBuilder.create();
@@ -358,7 +365,7 @@ public class LoginActivity extends Activity {
             		msg.what = EVENT_INCONSISTENT_PASSWD;
             		mHandler.sendMessage(msg);
             	}else{           		
-            		boolean result = mUserDbAdapter.updatePasswd(mTeleNumber, setPasswdET.getText().toString());
+            		boolean result = mUserDbAdapter.updateDriverPasswd(mTeleNumber, setPasswdET.getText().toString());
             		if(result){
             			if(forget){
             				Toast.makeText(getApplicationContext(), "更改密码成功", Toast.LENGTH_SHORT).show();
@@ -536,13 +543,14 @@ public class LoginActivity extends Activity {
 			showProgress(false);
 
 			if (success) {
+				new SQLThread().start();
 				String userinfo = mTeleNumberET.getText().toString();
 		        String password = mPasswordView.getText().toString();
 		        writeData(userinfo, password, mKeepUserinfo.isChecked(), mKeepPassword.isChecked());
 				Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-/*				Bundle bundle = new Bundle();
-				bundle.putInt("attendancetype", ATTENDANCE_TYPE_START);
-				intent.putExtras(bundle);*/
+				Bundle bundle = new Bundle();
+				bundle.putString("telenumber", userinfo);
+				intent.putExtras(bundle);
 				startActivity(intent);
 			} else {
 				if(mErrorType == ERROR_TYPE_TELE){
@@ -564,4 +572,55 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
+    public class SQLThread extends Thread {
+        @Override
+        public void run () {
+        	    mUserDbAdapter.open();
+        	    mUserDbAdapter.deleteAllParkingDetail();
+            	String licensePlate = "津HG9025";
+            	String teleNumber = "13512494993";
+            	String carType = "小客车";
+            	String parkingType = "普通停车";
+            	String parkingName = "天津市-津南区-易华录停车场";
+            	String parkingNumber = "P1234";
+            	int locationNumber = 0;
+            	String startTime = null;
+            	String leaveTime = null;
+            	String expenseStandard="5元/次";
+            	int expense=5;
+            	String paymentPattern = null;
+            	CharSequence sysTimeStr = DateFormat.format("yyyy-MM-dd HH:mm:ss", System.currentTimeMillis());
+            	String time = sysTimeStr.toString();
+            	for(int i=1;i<=3;i++){
+            		if(i==1){
+            			paymentPattern="未付";
+            			locationNumber = 5;
+            			startTime = time;
+            			expense = 0;
+            		}else if(i==2){
+            			paymentPattern="移动支付";
+            			locationNumber = 8;
+            			startTime = "2017-05-16 14:26:15";
+            			leaveTime = "2017-05-16 15:17:22";
+               			expense = 5;
+            		}else if(i==3){
+            			paymentPattern="现金支付";
+            			locationNumber = 12;
+            			startTime = "2017-05-18 17:33:19";
+            			leaveTime = "2017-05-18 18:31:27";
+               			expense = 5;
+            		}
+                    try {
+            		        mUserDbAdapter.insertParkingDeatail(licensePlate, teleNumber, carType, parkingType, 
+            				    parkingName, parkingNumber, locationNumber, startTime, leaveTime, expenseStandard, 
+            				    expense, paymentPattern);
+            		        Log.e("yifan","insert");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+            	}
+            	mUserDbAdapter.close();
+            }
+        }
+    
 }

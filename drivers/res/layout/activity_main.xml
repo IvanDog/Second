@@ -7,7 +7,7 @@
   
     <LinearLayout  
         android:id="@+id/linear_location_title"
-        android:background="#E94509"  
+        android:background="#EBEBEB"  
         android:layout_weight="1"  
         android:layout_width="match_parent"  
         android:layout_height="wrap_content"  
@@ -97,10 +97,32 @@
          android:layout_below="@+id/linear_location_title"
          android:layout_above="@+id/linear_buttons_main"
          android:layout_width="match_parent"
-         android:layout_height="220dp"
+         android:layout_height="match_parent"
          android:divider="#FFF"        
          android:dividerHeight="2px" 
          android:visibility="gone"/>
+       <ListView   
+         android:id="@+id/list_parking_detail"  
+         android:layout_below="@+id/linear_location_title"
+         android:layout_above="@+id/linear_buttons_main"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:divider="#EBEBEB"        
+         android:dividerHeight="2px"
+         android:visibility="gone" />
+          <include   
+              android:id="@+id/view_user_center"  
+              android:layout_below="@+id/linear_location_title"
+              android:layout_above="@+id/linear_buttons_main"
+              layout="@layout/view_user_center"
+              android:visibility="gone"/> 
+<!--       <View   
+         android:id="@+id/view_user_center"  
+         android:layout_below="@+id/linear_location_title"
+         android:layout_above="@+id/linear_buttons_main"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:visibility="gone" /> -->
      <LinearLayout
          android:id="@+id/linear_buttons_main"  
          android:layout_width="match_parent"
@@ -120,7 +142,7 @@
                 android:id="@+id/imgbt_find"
                 android:layout_width="wrap_content"  
                 android:layout_height="0dp"
-                android:background="@drawable/ic_time_to_leave_white_36dp" />
+                android:background="@drawable/ic_directions_car_white_36dp" />
             <TextView 
                 android:layout_weight="1" 
                 android:layout_height="0dp" 
@@ -143,7 +165,7 @@
                 android:layout_weight="1" 
                 android:layout_height="0dp" 
                 android:layout_width="wrap_content"  
-                android:text="  付费"  />
+                android:text=" 付费"  />
         </LinearLayout>
         <LinearLayout
            android:layout_weight="1"  
@@ -161,7 +183,7 @@
                 android:layout_weight="1" 
                 android:layout_height="0dp" 
                 android:layout_width="wrap_content"  
-                android:text="  我的"  />
+                android:text=" 我的"  />
         </LinearLayout>
       </LinearLayout>
 </RelativeLayout>

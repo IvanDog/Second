@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    <EditText	android:id="@+id/et_feedback_content"	
+        android:layout_width="fill_parent"	
+        android:layout_height="wrap_content"	
+        android:enabled="true"	
+        android:gravity="top"	
+        android:inputType="textMultiLine"	
+        android:hint="请输入您的宝贵建议......"
+        android:minLines="8"	
+        android:maxLines="10"	
+        android:scrollbars="vertical" 	
+        android:background="@android:drawable/edit_text"	>
+    </EditText>
+    <LinearLayout
+        android:id="@+id/linear_button_feedback"
+        android:layout_below="@+id/et_feedback_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+            <Button 
+              android:id="@+id/bt_confirm_feedback"
+              android:background = "@drawable/ic_ok"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:gravity="center"
+              android:textColor="#E94509"
+              android:text="提交" />
+            <Button 
+              android:id="@+id/bt_cancel_feedback"
+              android:background = "@drawable/ic_ok"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:gravity="center"
+              android:textColor="#E94509"
+              android:text="取消" />
+    </LinearLayout>
+</RelativeLayout>

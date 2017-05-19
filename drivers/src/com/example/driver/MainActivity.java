@@ -44,6 +44,7 @@ import com.amap.api.services.poisearch.Photo;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 import com.amap.api.services.poisearch.PoiSearch.SearchBound;
+import com.example.driver.R.drawable;
 
 
 import android.net.Uri;
@@ -57,9 +58,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -77,7 +80,9 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
@@ -86,10 +91,21 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity implements  LocationSource, AMapLocationListener, AMap.OnMapClickListener,
 AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener,PoiSearch.OnPoiSearchListener,Inputtips.InputtipsListener,OnGeocodeSearchListener{
+	private String mTeleNumber;
 	private TextView mCityTV;
-	private ListView mListView=null; 
+	private View mUserCenter;
+	private TextView mUserCenterTV;
+	private TextView mAccountBalanceTV;
+	private TextView mParkingCouponTV;
+	private ListView mParkingsList=null; 
 	private ListView mSearchList=null;
+	private ListView mParkingDetailList=null;
+	private ListView mUserCenterList=null;
 	private AlertDialog mDialog;
+	private int mAccountbalance;
+	private int mParkingCoupon;
+	private String mNickName;
+	private Drawable mHeadPortrait = null;
 	private String mCurrentCity = "天津";
 	private MapView mapView;//地图控件
 	private AMap mAMAP;//地图控制器对象
@@ -115,19 +131,28 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
     private RelativeLayout mPoiDetail;
     private View container;
     private TextView mPoiNameTV;
+    private ImageButton mPayIMBT;
+    private ImageButton mFindIMBT;
+    private ImageButton mMineIMBT;
 	private LatLonPoint lp = new LatLonPoint(39.1366672021, 117.2100419600);
     private String keyWord = "";
     private int mSearchTag = 0;
     private List<Map<String, Object>> mList=new ArrayList<Map<String,Object>>(); 
     private GeocodeSearch mGeocoderSearch;
+	private UserDbAdapter mUserDbAdapter;
     private static final int EVENT_SHOW_DIALOG = 101;
+    private static final int EVENT_DISPLAY_USER_INFORMATION = 102;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+		mUserDbAdapter = new UserDbAdapter(this);
         setContentView(R.layout.activity_main);
-        
+        Intent intent = getIntent();
+        Bundle bundle=intent.getExtras();
+        if(bundle!=null){
+        	mTeleNumber = bundle.getString("telenumber");
+        }
         mCityTV=(TextView)findViewById(R.id.tv_city);  
         mCityTV.setOnClickListener(new OnClickListener(){
         	@Override
@@ -135,7 +160,70 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
         		showCityDialog();
         	}
         });
-        
+        mFindIMBT=(ImageButton)findViewById(R.id.imgbt_find);
+        mFindIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_car_black_36dp)); 
+        mFindIMBT.setOnClickListener(new OnClickListener(){
+        	@Override
+        	public void onClick(View v){
+        		mFindIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_car_black_36dp)); 
+        		mPayIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_balance_wallet_white_36dp)); 
+        		mMineIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_white_36dp)); 
+        		
+        		mCityTV.setVisibility(View.VISIBLE);
+        		mKey.setVisibility(View.VISIBLE);
+          		mDeleteIV.setVisibility(View.VISIBLE);
+        		mParkingIV.setVisibility(View.VISIBLE);
+           	    container.setVisibility(View.VISIBLE);
+           	    mParkingDetailList.setVisibility(View.GONE); 
+        	     mUserCenter.setVisibility(View.GONE); 
+        	}
+        });
+        mPayIMBT=(ImageButton)findViewById(R.id.imgbt_pay);
+        mPayIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_balance_wallet_white_36dp)); 
+        mPayIMBT.setOnClickListener(new OnClickListener(){
+        	@Override
+        	public void onClick(View v){
+        		mFindIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_car_white_36dp)); 
+        		mPayIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_balance_wallet_black_36dp)); 
+        		mMineIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_white_36dp)); 
+        		
+        		setParkingDetailList();
+        		
+        		mCityTV.setVisibility(View.GONE);
+        		mKey.setVisibility(View.GONE);
+        		mDeleteIV.setVisibility(View.GONE);
+        		mParkingIV.setVisibility(View.GONE);
+           	    container.setVisibility(View.GONE);
+       	        mParkingsList.setVisibility(View.GONE);
+           	    mParkingDetailList.setVisibility(View.VISIBLE); 
+          	     mUserCenter.setVisibility(View.GONE); 
+           	    if(mParkingDetailList.getAdapter().getCount()==0){
+           	    	Toast.makeText(getApplicationContext(), "暂无未支付订单", Toast.LENGTH_SHORT).show();
+           	    }
+        	}
+        });
+        mMineIMBT=(ImageButton)findViewById(R.id.imgbt_mine);
+        mMineIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_white_36dp)); 
+        mMineIMBT.setOnClickListener(new OnClickListener(){
+        	@Override
+        	public void onClick(View v){
+        		mFindIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_directions_car_white_36dp)); 
+        		mPayIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_balance_wallet_white_36dp)); 
+        		mMineIMBT.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_box_black_36dp)); 
+        		
+        		setParkingDetailList();
+        		
+        		mCityTV.setVisibility(View.GONE);
+        		mKey.setVisibility(View.GONE);
+        		mDeleteIV.setVisibility(View.GONE);
+        		mParkingIV.setVisibility(View.GONE);
+           	    container.setVisibility(View.GONE);
+       	        mParkingsList.setVisibility(View.GONE);
+           	    mParkingDetailList.setVisibility(View.GONE); 
+           	     mUserCenter.setVisibility(View.VISIBLE); 
+           	    
+        	}
+        });
         mapView = (MapView)findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         mAMAP = mapView.getMap();          //获取地图对象
@@ -159,8 +247,8 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
         
         mKey=(AutoCompleteTextView) findViewById(R.id.ac_search_input);
         container=(View)findViewById(R.id.frame_container);
-        mListView=(ListView)findViewById(R.id.list_main);  
-        mListView.setOnItemClickListener(new OnItemClickListener(){
+        mParkingsList=(ListView)findViewById(R.id.list_main);  
+        mParkingsList.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                     long arg3) {
@@ -208,16 +296,32 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
             	mSearchTag=1;
             }
         });
+        mParkingDetailList = (ListView) findViewById(R.id.list_parking_detail);
+        mParkingDetailList.setOnItemClickListener(new OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                    long arg3) {
+            	Map<String,Object> map=(Map<String,Object>)mParkingDetailList.getItemAtPosition(arg2);
+            	Log.e("yifan","id is" + map.get("id"));
+            	long id = (Long)map.get("id");
+            	Intent intent = new Intent(MainActivity.this,ParkingInformationActivity.class);
+				Bundle bundle = new Bundle();
+				bundle.putLong("id", id);
+				bundle.putString("telenumber", mTeleNumber);
+				intent.putExtras(bundle);
+				startActivity(intent);
+            }
+        });
         mParkingIV=(ImageView)findViewById(R.id.iv_parking_list);
         mParkingIV.setOnClickListener(new OnClickListener(){
              @Override
              public void onClick(View v){
             	 if(container.getVisibility()==View.VISIBLE){
                 	 container.setVisibility(View.GONE);
-                	 mListView.setVisibility(View.VISIBLE);
+                	 mParkingsList.setVisibility(View.VISIBLE);
             	 }else if(container.getVisibility()==View.GONE){
                 	 container.setVisibility(View.VISIBLE);
-                	 mListView.setVisibility(View.GONE);
+                	 mParkingsList.setVisibility(View.GONE);
             	 }
              }
         });
@@ -294,8 +398,185 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
             public void afterTextChanged(Editable s) {
             }
         });
-
+         mUserCenter=(View)findViewById(R.id.view_user_center);
+         mUserCenterTV=(TextView)mUserCenter.findViewById(R.id.tv_user_center);
+         mUserCenterTV.setOnClickListener(new OnClickListener(){
+             @Override
+             public void onClick(View v){
+         		Intent userIntent = new Intent(MainActivity.this,UserInformationActivity.class);
+         		Bundle userBindle = new Bundle();
+         		userBindle.putString("telenumber", mTeleNumber);
+         		userIntent.putExtras(userBindle);
+         		startActivity(userIntent);
+             }
+         });
+         mAccountBalanceTV=(TextView)mUserCenter.findViewById(R.id.tv_account_balance_user_center);
+         mAccountBalanceTV.setOnClickListener(new OnClickListener(){
+             @Override
+             public void onClick(View v){
+         		Intent mobileIntent = new Intent(MainActivity.this,RechargeActivity.class);
+         		Bundle mobileBundle = new Bundle();
+         		mobileBundle.putString("telenumber", mTeleNumber);
+         		mobileIntent.putExtras(mobileBundle);
+         		startActivity(mobileIntent);
+             }
+         });
+         mParkingCouponTV=(TextView)mUserCenter.findViewById(R.id.tv_coupon_user_center);
+         mParkingCouponTV.setOnClickListener(new OnClickListener(){
+             @Override
+             public void onClick(View v){
+         		Intent mobileIntent = new Intent(MainActivity.this,ParkingCouponActivity.class);
+         		Bundle mobileBundle = new Bundle();
+         		mobileBundle.putString("telenumber", mTeleNumber);
+         		mobileIntent.putExtras(mobileBundle);
+         		startActivity(mobileIntent);
+             }
+         });
+         new UpdateInformationThread().start();
+         mUserCenterList=(ListView)mUserCenter.findViewById(R.id.list_function_user_center);
+         List<Map<String, Object>> list=getUserCenterData();  
+         mUserCenterList.setAdapter(new UserCenterListAdapter(this, list));
+         mUserCenterList.setOnItemClickListener(new OnItemClickListener(){
+             @Override
+             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                     long arg3) {
+                 // TODO Auto-generated method stub
+             	Map<String,Object> map=(Map<String,Object>)mUserCenterList.getItemAtPosition(arg2);
+                 String userCenterFunction=(String)map.get("userCenterFunction");
+                 if(userCenterFunction.equals("车辆管理")){
+                    Intent intent = new Intent(MainActivity.this,LicensePlateManagementActivity.class);
+    				Bundle bundle = new Bundle();
+    				bundle.putString("telenumber", mTeleNumber);
+    				intent.putExtras(bundle);
+       	        	startActivity(intent); 
+                  }else if(userCenterFunction.equals("停车记录")){
+                   	Intent intent = new Intent(MainActivity.this,ParkingRecordActivity.class);
+   	        	    startActivity(intent);  
+                  }else if(userCenterFunction.equals("我的车位")){
+                	 Toast.makeText(getApplicationContext(), "我的车位功能开发中", Toast.LENGTH_SHORT).show();
+                   }else if(userCenterFunction.equals("意见反馈")){
+                  	Intent intent = new Intent(MainActivity.this,FeedbackActivity.class);
+    				Bundle bundle = new Bundle();
+    				bundle.putString("telenumber", mTeleNumber);
+    				intent.putExtras(bundle);
+  	        	    startActivity(intent);
+                  }else if(userCenterFunction.equals("消息中心")){
+                 	Intent intent = new Intent(MainActivity.this,MessageCenterActivity.class);
+ 	        	    startActivity(intent);
+                 }else if(userCenterFunction.equals("退出账号")){
+                 	showExitDialog();
+                 }
+             }
+         });
     }
+    
+    public class UpdateInformationThread extends Thread{
+    	@Override
+    	public void run(){
+    		mUserDbAdapter.open();
+    		Cursor cursor = null;
+    		do{
+        		try{
+            		cursor = mUserDbAdapter.getUser(mTeleNumber);
+        			mAccountbalance = cursor.getInt(cursor.getColumnIndex("accountbalance"));
+        			mParkingCoupon = cursor.getInt(cursor.getColumnIndex("parkingcoupon"));
+        			mNickName = cursor.getString(cursor.getColumnIndex("nickname"));
+        			byte[] headPortraitByteArray = cursor.getBlob(cursor.getColumnIndex("headportrait"));
+        			if(headPortraitByteArray!=null){
+        				mHeadPortrait=bytes2Drawable(headPortraitByteArray);
+        			}
+    		    	Message msg = new Message();
+    		    	msg.what = EVENT_DISPLAY_USER_INFORMATION;
+    		    	mHandler.sendMessage(msg);
+            		Thread.sleep(1000);
+        		}catch(Exception e){
+        			e.printStackTrace();
+        		}finally{
+                	if(cursor!=null){
+                		cursor.close();
+                    }
+        		}
+    		}while(true);
+    	}
+    }
+    
+    // byte[]转换成Drawable  
+    public Drawable bytes2Drawable(byte[] b) {  
+        Bitmap bitmap = this.bytes2Bitmap(b);  
+        return this.bitmap2Drawable(bitmap);  
+    }
+    
+    // byte[]转换成Bitmap  
+    public Bitmap bytes2Bitmap(byte[] b) {  
+        if (b.length != 0) {  
+            return BitmapFactory.decodeByteArray(b, 0, b.length);  
+        }  
+        return null;  
+    }  
+    
+    // Bitmap转换成Drawable  
+    public Drawable bitmap2Drawable(Bitmap bitmap) {  
+        BitmapDrawable bd = new BitmapDrawable(bitmap);  
+        Drawable d = (Drawable) bd;  
+        return d;  
+    } 
+    
+    public List<Map<String, Object>> getUserCenterData(){  
+        List<Map<String, Object>> list=new ArrayList<Map<String,Object>>();  
+        for (int i = 1; i <= 6; i++) {  
+            Map<String, Object> map=new HashMap<String, Object>();  
+            if(i==1){
+                map.put("userCenterFunction",  "车辆管理");
+                map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_exposure_black_18dp);
+            }else if(i==2){
+                map.put("userCenterFunction",  "停车记录");
+                map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_insert_invitation_black_18dp);
+            }else if(i==3){
+            	map.put("userCenterFunction",  "我的车位");
+            	map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_directions_car_black_18dp);
+            }else if(i==4){
+            	map.put("userCenterFunction",  "意见反馈");
+            	map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_border_color_black_18dp);
+            }else if(i==5){
+                map.put("userCenterFunction",  "消息中心");
+                map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_message_black_18dp);
+            }else if(i==6){
+            	map.put("userCenterFunction",  "退出账号");
+            	map.put("userCenterFunctionSpreadImage",  drawable.ic_chevron_right_black_24dp);
+                map.put("userCenterFunctionImage",  drawable.ic_power_settings_new_black_18dp);
+            }
+            list.add(map);  
+        }  
+        return list;  
+      }
+
+    private void showExitDialog(){
+        final AlertDialog.Builder exitDialog = new AlertDialog.Builder(MainActivity.this);
+        exitDialog.setIcon(R.drawable.ic_exit_to_app_black_24dp);
+        exitDialog.setTitle("退出账号");
+        exitDialog.setMessage("确定退出当前账号？");
+        exitDialog.setPositiveButton("确定",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+				Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+				startActivity(intent);
+				finish();
+            }
+        });
+        exitDialog.setNegativeButton("关闭",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //...To-do
+            }
+        });
+        exitDialog.show();
+    }
+    
     
     protected void doSearchQuery(String city){
     	keyWord = mKey.getText().toString().trim();
@@ -514,7 +795,7 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
                     buffer.append(amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getProvince() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
-                    Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_LONG).show();
                     isFirstLoc = false;
                 }
 
@@ -860,6 +1141,23 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
           switch (msg.what) {
               case EVENT_SHOW_DIALOG:
                   break;
+              case EVENT_DISPLAY_USER_INFORMATION:
+            	  mAccountBalanceTV.setText("账户余额: "  + mAccountbalance + "元");
+            	  mParkingCouponTV.setText("停车券: "  + mParkingCoupon + "张");
+            	  if(mNickName!=null){
+                	  mUserCenterTV.setText(mNickName);
+            	  }else{
+            		  mUserCenterTV.setText(mTeleNumber);
+            	  }
+            	  if(mHeadPortrait!=null){
+            		  mHeadPortrait.setBounds(0, 0, 80, 80);
+            		  mUserCenterTV.setCompoundDrawables(mHeadPortrait, null, null, null);
+            	  }else{
+            			Drawable drawable = getResources().getDrawable(R.drawable.ic_user_center);
+            			drawable.setBounds(0, 0, 80, 80);
+              		    mUserCenterTV.setCompoundDrawables(drawable, null, null, null);
+            	  }
+              	 break;
               default:
                   break;
           }
@@ -978,7 +1276,7 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
     }
     
     public void setAdapter(){
-    	mListView.setAdapter(new ParkingDetailAdapter(this, mList));
+    	mParkingsList.setAdapter(new ParkingListAdapter(this, mList));
     }
     
        /* 检查手机上是否安装了指定的软件 
@@ -1011,9 +1309,28 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
            return info;
        }
 
+    public void setParkingDetailList(){
+    	List<Map<String, Object>> parkingDetailList=new ArrayList<Map<String,Object>>(); 
+		mUserDbAdapter.open();
+		Cursor cursor = mUserDbAdapter.getParkingDetail(mTeleNumber);
+		do{
+			if((cursor.getString(cursor.getColumnIndex("paymentpattern"))).equals("未付")){
+				Map<String, Object> map=new HashMap<String, Object>();  
+                map.put("licenseNumber", cursor.getString(cursor.getColumnIndex("licenseplate")));
+                map.put("startTime", cursor.getString(cursor.getColumnIndex("starttime")));
+                map.put("parkingname", cursor.getString(cursor.getColumnIndex("parkingname")));
+                map.put("id", cursor.getLong(cursor.getColumnIndex("_id")));
+				parkingDetailList.add(map);  
+			}
+		}while(cursor.moveToNext());
+		mUserDbAdapter.close();
+        mParkingDetailList.setAdapter(new ParkingDetailAdapter(this, parkingDetailList));
+    }
+    
+    
 	@Override
 	public void onGetInputtips(List<Tip> arg0, int arg1) {
-		// TODO Auto-generated method stub天津
+		// TODO Auto-generated method stub
 	}
 
 	@Override
