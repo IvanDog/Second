@@ -16,6 +16,7 @@ import android.widget.Toast;
 public class SetNickNameActivity extends Activity {
 	private static final int EVENT_SET_NICKNAME_SUCCESS = 101;
 	private static final int EVENT_SET_NICKNAME_FAIL = 102;
+	private static final int EVENT_NICKNAME_EMPTY = 103;
 	private UserDbAdapter mUserDbAdapter;
 	private EditText mNickNameET;
 	private Button mConfirmBT;
@@ -36,6 +37,12 @@ public class SetNickNameActivity extends Activity {
 		mConfirmBT.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v){
+				if(mNickNameET.getText().toString()==null){
+					Message msg = new Message();
+					msg.what=EVENT_NICKNAME_EMPTY;
+					mHandler.sendMessage(msg);
+					return;
+				}
 				if(mUserDbAdapter.updateDriverNickName(mTeleNumber,mNickNameET.getText().toString())){
 					Message msg = new Message();
 					msg.what=EVENT_SET_NICKNAME_SUCCESS;
@@ -66,6 +73,9 @@ public class SetNickNameActivity extends Activity {
             	    break;
                 case EVENT_SET_NICKNAME_FAIL:
             	    Toast.makeText(getApplicationContext(), "设置失败", Toast.LENGTH_SHORT).show();
+            	    break;
+                case EVENT_NICKNAME_EMPTY:
+            	    Toast.makeText(getApplicationContext(), "设置不可为空", Toast.LENGTH_SHORT).show();
             	    break;
                 default:
                     break;

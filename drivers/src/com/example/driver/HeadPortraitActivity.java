@@ -85,10 +85,11 @@ public class HeadPortraitActivity extends Activity {
 	        Intent intentFromGallery = new Intent();
 	        // 设置文件类型
 	        intentFromGallery.setType("image/*");//选择图片
-	        intentFromGallery.setAction(Intent.ACTION_GET_CONTENT);
+	        intentFromGallery.setAction(/*Intent.ACTION_GET_CONTENT*/Intent.ACTION_PICK);
 	        //如果你想在Activity中得到新打开Activity关闭后返回的数据，
 	        //你需要使用系统提供的startActivityForResult(Intent intent,int requestCode)方法打开新的Activity
 	        startActivityForResult(intentFromGallery, CODE_GALLERY_REQUEST);
+	        
 	    }
 
 	    // 启动手机相机拍摄照片作为头像
@@ -107,7 +108,7 @@ public class HeadPortraitActivity extends Activity {
 	    protected void onActivityResult(int requestCode, int resultCode,Intent intent) {
 	        // 用户没有进行有效的设置操作，返回
 	        if (resultCode == RESULT_CANCELED) {//取消
-	            Toast.makeText(getApplication(), "取消", Toast.LENGTH_LONG).show();
+	            Toast.makeText(getApplication(), "设置取消", Toast.LENGTH_SHORT).show();
 	            return;
 	        }
 	        switch (requestCode) {

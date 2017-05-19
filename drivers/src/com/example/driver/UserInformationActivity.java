@@ -36,7 +36,7 @@ public class UserInformationActivity extends Activity {
 	private ListView mListView;
 	private String mTeleNumber;
 	private Context mContext;
-	private String mNickName = "Yifan";
+	private String mNickName = null;
 	private Drawable mHeadPortrait = null;
 	private final static int EVENT_UPDATE_DISPLAY = 101;
 	

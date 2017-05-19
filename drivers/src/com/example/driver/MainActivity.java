@@ -432,7 +432,6 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
          		startActivity(mobileIntent);
              }
          });
-         new UpdateInformationThread().start();
          mUserCenterList=(ListView)mUserCenter.findViewById(R.id.list_function_user_center);
          List<Map<String, Object>> list=getUserCenterData();  
          mUserCenterList.setAdapter(new UserCenterListAdapter(this, list));
@@ -850,6 +849,7 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
     protected void onResume() {
      super.onResume();
      mapView.onResume();
+     new UpdateInformationThread().start();
     }
     
     /**
@@ -1326,7 +1326,6 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
 		mUserDbAdapter.close();
         mParkingDetailList.setAdapter(new ParkingDetailAdapter(this, parkingDetailList));
     }
-    
     
 	@Override
 	public void onGetInputtips(List<Tip> arg0, int arg1) {

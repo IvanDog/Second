@@ -5,6 +5,5 @@
 	<classpathentry exported="true" kind="lib" path="/home/gouyifan/code/drivers/libs/AMap2DMap_4.2.0_AMapSearch_5.0.0_AMapLocation_3.4.0_20170427.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
