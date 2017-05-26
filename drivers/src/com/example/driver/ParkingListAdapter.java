@@ -47,9 +47,13 @@ public class ParkingListAdapter extends BaseAdapter {
         public View navigation;  
         private LinearLayout parkingInformationDetail;
     	private LinearLayout parkingInformationHideDetail;
+    	private TextView parkingNameHideTV; 
+        private TextView locationHideTV;  
+        private TextView parkingNumberHideTV; 
     	private TextView parkingNumberTotalTV;
     	private TextView parkingNumberIdleTV;
-    	private TextView parkingNumberInUseTV;
+    	private TextView parkingFeeTV;
+    	private TextView parkingFreeTimeTV;
     }  
     @Override  
     public int getCount() {  
@@ -76,7 +80,7 @@ public class ParkingListAdapter extends BaseAdapter {
         if(convertView==null){  
             zujian=new Zujian();  
             //获得组件，实例化组件  
-            convertView=layoutInflater.inflate(R.layout.list_main, null);  
+            convertView=layoutInflater.inflate(R.layout.list_parking_list, null);  
             zujian.parkingNameTV=(TextView)convertView.findViewById(R.id.tv_parkingname);  
             zujian.distanceTV=(TextView)convertView.findViewById(R.id.tv_distance);  
             zujian.locationTV=(TextView)convertView.findViewById(R.id.tv_location);  
@@ -84,11 +88,14 @@ public class ParkingListAdapter extends BaseAdapter {
             zujian.feeTV = (TextView)convertView.findViewById(R.id.tv_fee); 
             zujian.parkingDetailTV = (TextView)convertView.findViewById(R.id.tv_parking_details); 
             zujian.navigation=(View)convertView.findViewById(R.id.linear_navigation);
-            zujian.parkingInformationDetail = (LinearLayout)convertView.findViewById(R.id.list_main); 
-            zujian.parkingInformationHideDetail = (LinearLayout)convertView.findViewById(R.id.list_main_hide); 
-            zujian.parkingNumberTotalTV=(TextView)convertView.findViewById(R.id.tv_parking_number_total);  
-            zujian.parkingNumberIdleTV=(TextView)convertView.findViewById(R.id.tv_parking_number_idle);  
-            zujian.parkingNumberInUseTV=(TextView)convertView.findViewById(R.id.tv_parking_number_in_use);  
+            zujian.parkingInformationDetail = (LinearLayout)convertView.findViewById(R.id.list_parking_list); 
+            zujian.parkingInformationHideDetail = (LinearLayout)convertView.findViewById(R.id.list_parking_list_hide); 
+            zujian.parkingNameHideTV=(TextView)convertView.findViewById(R.id.tv_parkingname_hide);  
+            zujian.locationHideTV=(TextView)convertView.findViewById(R.id.tv_location_hide);  
+            zujian.parkingNumberTotalTV=(TextView)convertView.findViewById(R.id.tv_parking_number_total_hide);  
+            zujian.parkingNumberIdleTV=(TextView)convertView.findViewById(R.id.tv_parking_number_idle_hide);  
+            zujian.parkingFeeTV=(TextView)convertView.findViewById(R.id.tv_parking_fee_hide);  
+            zujian.parkingFreeTimeTV=(TextView)convertView.findViewById(R.id.tv_parking_free_time_duration_hide);  
             convertView.setTag(zujian);  
         }else{  
             zujian=(Zujian)convertView.getTag();  
@@ -99,9 +106,12 @@ public class ParkingListAdapter extends BaseAdapter {
         zujian.locationTV.setText((String)data.get(position).get("location"));  
         zujian.parkingNumberTV.setText((String)data.get(position).get("parkingNumberIdle"));  
         zujian.feeTV.setText((String)data.get(position).get("fee"));  
+        zujian.parkingNameHideTV.setText((String)data.get(position).get("parkingName"));
+        zujian.locationHideTV.setText("地址：" + (String)data.get(position).get("location"));  
         zujian.parkingNumberTotalTV.setText((String)(data.get(position).get("parkingNumberTotal"))); 
         zujian.parkingNumberIdleTV.setText((String)(data.get(position).get("parkingNumberIdle"))); 
-        zujian.parkingNumberInUseTV.setText((String)(data.get(position).get("parkingNumberInUse"))); 
+        zujian.parkingFeeTV.setText((String)(data.get(position).get("parkingFee"))); 
+        zujian.parkingFreeTimeTV.setText((String)(data.get(position).get("parkingFreeTime"))); 
         zujian.navigation.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v){

@@ -69,8 +69,10 @@ public class LoginActivity extends Activity {
 	private UserDbAdapter mUserDbAdapter;
 	private Button mApplyVerificationCodeBT;
 	private AlertDialog mDialog;
+	private Object mLock = new Object();
 	private Thread mTimeThread;
-	private boolean mUpdateTime =true;
+	private  boolean mUpdateTime =true;
+	private int mThreadTime = 60;
     private static final String SAVE_FILE_NAME = "save_spref";
     private static final int EVENT_EXIST_NUMBER=101;
     private static final int EVENT_EMPTY_TELE_NUMBER=102;
@@ -86,6 +88,7 @@ public class LoginActivity extends Activity {
 	private static final int ERROR_TYPE_TELE=401;
 	private static final int ERROR_TYPE_PASSWD=402;
 	private static final int ERROR_TYPE_NO_ERROR=403;
+	private static final int ERROR_TYPE_EMPTY_TELE=404;
 	
 	private static final int EVENT_UPDATE_TIME=501;
 	private int mErrorType = ERROR_TYPE_NO_ERROR;
@@ -94,10 +97,6 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		mUserDbAdapter = new UserDbAdapter(this);
 		setContentView(R.layout.activity_login);
-		
-		
-		// Set up the login form.
-		//mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
 		mTeleNumberET = (EditText) findViewById(R.id.et_tele_login);
 		mTeleNumberET.setText(mTeleNumber);
 
@@ -118,6 +117,11 @@ public class LoginActivity extends Activity {
 		mRegisterBT.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v) {
+            	if(mTimeThread!=null){
+                	mTimeThread.interrupt();
+            	}
+		    	mUpdateTime = false;
+		    	mThreadTime = 60;
 		    	showRegisterDialog(false);
             }
 		});
@@ -128,6 +132,11 @@ public class LoginActivity extends Activity {
 		mForgetPasswdTV.setOnClickListener(new OnClickListener(){
 		    @Override
 		    public void onClick(View v){
+            	if(mTimeThread!=null){
+                	mTimeThread.interrupt();
+            	}
+		    	mUpdateTime = false;
+		    	mThreadTime = 60;
 		    	showRegisterDialog(true);
 		    }
 		});
@@ -158,7 +167,7 @@ public class LoginActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		getMenuInflater().inflate(R.menu.activity_login, menu);
+		//getMenuInflater().inflate(R.menu.activity_login, menu);
 		return true;
 	}
 
@@ -252,6 +261,7 @@ public class LoginActivity extends Activity {
 		final EditText teleNumberET = (EditText)view.findViewById(R.id.et_input_tele_number);
 		final EditText verificationCodeET = (EditText)view.findViewById(R.id.et_input_verification_code);
 		mApplyVerificationCodeBT = (Button)view.findViewById(R.id.bt_apply_verification_code);
+		mApplyVerificationCodeBT.setText("验证码");
 		final Button nextRegisterStepBT=(Button)view.findViewById(R.id.bt_next_register_step);
 		nextRegisterStepBT.setEnabled(false);
 		final CheckBox agreeCB = (CheckBox)view.findViewById(R.id.cb_agree);
@@ -261,6 +271,12 @@ public class LoginActivity extends Activity {
             	nextRegisterStepBT.setEnabled(agreeCB.isChecked());
             }
         });
+		if(forget){
+			agreeCB.setVisibility(View.GONE);
+			nextRegisterStepBT.setEnabled(true);
+		}else{
+			agreeCB.setVisibility(View.VISIBLE);
+		}
 		final AlertDialog.Builder VCdialogBuilder = new AlertDialog.Builder(LoginActivity.this);
 		VCdialogBuilder.setView(view); // 自定义dialog
 		//VCdialogBuilder.setCancelable(false);//点击对话框外面的区域无效
@@ -293,7 +309,7 @@ public class LoginActivity extends Activity {
                 		mHandler.sendMessage(msg);
             		}else{
                 		mTeleNumber = teleNumberET.getText().toString();
-                    	long  result = mUserDbAdapter.insertDriver(teleNumberET.getText().toString(), null, null, null, 0, 1, null, null);
+                    	long  result = mUserDbAdapter.insertDriver(teleNumberET.getText().toString(), null, null, null, 0, 10, null, null);
                     	if(result != -1){
                     		Log.e("yifan","insert ok");
                     		Message msg = new Message();
@@ -309,29 +325,30 @@ public class LoginActivity extends Activity {
 			}
 		});
 		class TimeThread extends Thread {
-			public int time = 60;
 	        @Override
 	        public void run () {
-	            do {
-	                try {
-	                	while(time>=0 && mUpdateTime){
-		                    Thread.sleep(1000);
-		                    Message msg = new Message();
-		                    msg.what = EVENT_UPDATE_TIME;
-		                    msg.obj = time--;
-							mHandler.sendMessage(msg);
-	                	}
-	                }
-	                catch (InterruptedException e) {
-	                    e.printStackTrace();
-	                }
-	            } while(true);
+	        	synchronized(mLock) {
+		                try {
+		                	while(mThreadTime>=0 && mUpdateTime){
+			                    Thread.sleep(1000);
+			                    Message msg = new Message();
+			                    msg.what = EVENT_UPDATE_TIME;
+			                    msg.obj = mThreadTime--;
+								mHandler.sendMessage(msg);
+								Log.e("gouyifan","update time");
+		                	}
+		                }
+		                catch (InterruptedException e) {
+		                    e.printStackTrace();
+		                }
+	        	}
 	        }
 	    }
 		mApplyVerificationCodeBT.setOnClickListener(new OnClickListener() {
 			@Override
 		    public void onClick(View v) {
 				mApplyVerificationCodeBT.setEnabled(false);
+				mUpdateTime=true;
 				mTimeThread=new TimeThread();
 				mTimeThread.start();
 		    }
@@ -529,7 +546,11 @@ public class LoginActivity extends Activity {
 						return false;
 					}
 				}else{
-					mErrorType = ERROR_TYPE_TELE;
+					if(("").equals(mTeleNumber)){
+						mErrorType = ERROR_TYPE_EMPTY_TELE;
+					}else{
+						mErrorType = ERROR_TYPE_TELE;
+					}
 				}
 			}while(cursor.moveToNext());
 			mUserDbAdapter.close();
@@ -553,10 +574,13 @@ public class LoginActivity extends Activity {
 				intent.putExtras(bundle);
 				startActivity(intent);
 			} else {
-				if(mErrorType == ERROR_TYPE_TELE){
+			  if(mErrorType == ERROR_TYPE_EMPTY_TELE){
+					mTeleNumberET.setError(getString(R.string.error_empty_tele));
+					mTeleNumberET.requestFocus();
+			  }else if(mErrorType == ERROR_TYPE_TELE){
 					mTeleNumberET.setError(getString(R.string.error_incorrect_tele));
 					mTeleNumberET.requestFocus();
-				}else if(mErrorType == ERROR_TYPE_PASSWD){
+			   }else if(mErrorType == ERROR_TYPE_PASSWD){
 					mPasswordView
 					.setError(getString(R.string.error_incorrect_password));
 					mPasswordView.requestFocus();

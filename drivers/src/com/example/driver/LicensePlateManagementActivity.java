@@ -1,12 +1,15 @@
 package com.example.driver;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +40,7 @@ public class LicensePlateManagementActivity extends Activity {
 	private static final int TYPE_DELETE_SECOND_LICENSE =202;
 	private static final int EVENT_DISMISS_FIRST_LICENSE=301;
 	private static final int EVENT_DISMISS_SECOND_LICENSE=302;
+	private static final int EVENT_DISMISS_BOTH_LICENSE=303;
 	@Override  
     public void onCreate(Bundle savedInstanceState) {  
         super.onCreate(savedInstanceState);  
@@ -53,7 +57,7 @@ public class LicensePlateManagementActivity extends Activity {
             	Bundle bundle = new Bundle();
             	bundle.putString("telenumber", mTeleNumber);
             	intent.putExtras(bundle);
-            	startActivity(intent);
+            	startActivityForResult(intent,0);
             }
         });
         mLicensePlateFirstTV=(TextView)findViewById(R.id.tv_license_plate_first);
@@ -77,9 +81,27 @@ public class LicensePlateManagementActivity extends Activity {
         mLinearLicensePlateFirst=(View)findViewById(R.id.linear_license_plate_first);
         mLinearLicensePlateSecond=(View)findViewById(R.id.linear_license_plate_second);
         new DisplayThread().start();
+        Log.e("yifan","DisplayThread is starting");
     	getActionBar().setDisplayHomeAsUpEnabled(true); 
 	}
 	
+	public void onResume(){
+		super.onResume();
+	}
+	
+	public void onPause(){
+		super.onPause();
+	}
+	
+    @Override  
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {  
+        // TODO Auto-generated method stub  
+        super.onActivityResult(requestCode, resultCode, data);  
+        if(requestCode==0){  
+        	finish();
+        }  
+    } 
+    
 	public class DeleteThread extends Thread {
         @Override
         public void run () {
@@ -120,7 +142,7 @@ public class LicensePlateManagementActivity extends Activity {
         public void run () {
         	mUserDbAdapter.open();
         	Cursor cursor = mUserDbAdapter.getUser(mTeleNumber);
-        	try {
+        		try {
         		    mLicensePlateFirst = cursor.getString(cursor.getColumnIndex("licenseplatefirst"));
         		    mLicensePlateSecond = cursor.getString(cursor.getColumnIndex("licenseplatesecond"));
         		    if(mLicensePlateFirst!=null && mLicensePlateSecond!=null){
@@ -134,6 +156,10 @@ public class LicensePlateManagementActivity extends Activity {
         		    }else if(mLicensePlateFirst==null && mLicensePlateSecond!=null){
         		    	Message msg = new Message();
         		    	msg.what = EVENT_DISPLAY_SECOND_LICENSE;
+        		    	mHandler.sendMessage(msg);
+        		    }else if(mLicensePlateFirst==null && mLicensePlateSecond==null){
+        		    	Message msg = new Message();
+        		    	msg.what = EVENT_DISMISS_BOTH_LICENSE;
         		    	mHandler.sendMessage(msg);
         		    }
         		}catch (Exception e) {
@@ -152,14 +178,17 @@ public class LicensePlateManagementActivity extends Activity {
 			super.handleMessage(msg);
 			switch(msg.what){
 			    case EVENT_DISPLAY_DOUBLE_LICENSE:
+                    Log.e("yifan","EVENT_DISPLAY_DOUBLE_LICENSE");
     		    	mLicensePlateFirstTV.setText(mLicensePlateFirst);
     		    	mLicensePlateSecondTV.setText(mLicensePlateSecond);
     		    	break;
 			    case EVENT_DISPLAY_FIRST_LICENSE:
+                    Log.e("yifan","EVENT_DISPLAY_FIRST_LICENSE");
     		    	mLicensePlateFirstTV.setText(mLicensePlateFirst);
     		    	mLinearLicensePlateSecond.setVisibility(View.GONE);
     		    	break;
 			    case EVENT_DISPLAY_SECOND_LICENSE:
+                    Log.e("yifan","EVENT_DISPLAY_SECOND_LICENSE");
     		    	mLicensePlateFirstTV.setText(mLicensePlateSecond);
     		    	mLinearLicensePlateSecond.setVisibility(View.GONE);
     		    	break;
@@ -169,6 +198,10 @@ public class LicensePlateManagementActivity extends Activity {
 			    case EVENT_DISMISS_SECOND_LICENSE:
 			    	mLinearLicensePlateSecond.setVisibility(View.GONE);
 			    	break;
+			    case EVENT_DISMISS_BOTH_LICENSE:
+			    	mLinearLicensePlateFirst.setVisibility(View.GONE);
+		    	    mLinearLicensePlateSecond.setVisibility(View.GONE);
+		    	    break;
     		    default:
     		    	break;
 			}

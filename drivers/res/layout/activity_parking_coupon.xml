@@ -9,8 +9,17 @@
         android:layout_width="match_parent"
         android:background="#EBEBEB"
         android:divider="#E94509"
-        android:dividerHeight="1dp"
+        android:dividerHeight="2dp"
         android:layout_height="wrap_content">
     </ListView>
-
+     <TextView
+        android:id="@+id/tv_empty_coupon_notify_coupon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="暂无可用停车券"
+        android:textColor="#FFFFFF"
+        android:textSize="30dp"
+        android:visibility="gone"/>
 </LinearLayout>

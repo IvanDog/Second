@@ -5,7 +5,7 @@
 
     <ImageView
         android:id="@+id/iv_user_head_portrait"
-        android:src="@drawable/ic_user_center"
+        android:src="@drawable/ic_user_center_2"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="0dp"

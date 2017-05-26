@@ -131,13 +131,13 @@ public class RechargeActivity extends Activity {
 				}
 			}
 		});
-        mCancelLeavingBT=(Button)findViewById(R.id.bt_cancel_payment_recharge);
+/*        mCancelLeavingBT=(Button)findViewById(R.id.bt_cancel_payment_recharge);
         mCancelLeavingBT.setOnClickListener(new OnClickListener(){
         	@Override
         	public void onClick(View v){
         		finish();
         	}
-        });
+        });*/
 		new WalletThread().start();
 		 getActionBar().setDisplayHomeAsUpEnabled(true);
 	}

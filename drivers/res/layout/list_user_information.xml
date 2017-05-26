@@ -22,14 +22,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="2"
+        android:layout_weight="1.25"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:drawablePadding="8dp"
         android:textColor="#E94509"
-        android:textSize="15sp"/>
+        android:textSize="12sp"/>
      <ImageView 
         android:id="@+id/iv_enter_user_information"
         android:layout_width="0dp"

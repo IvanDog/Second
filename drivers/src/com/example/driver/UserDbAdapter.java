@@ -177,6 +177,15 @@ public class UserDbAdapter {
     }  
     
     //updates a driver information  
+    public boolean updateDriverCoupon(String telenumber, int parkingcoupon)  
+    {  
+        ContentValues values = new ContentValues();  
+        values.put(KEY_TELE_NUMBER, telenumber);  
+        values.put(KEY_PARKING_COUPON, parkingcoupon);
+        return db.update(DATABASE_DRIVER_TABLE, values, KEY_TELE_NUMBER + "=" +telenumber, null) > 0;  
+    }  
+    
+    //updates a driver information  
     public boolean updateDriverLisence(String telenumber,String licenseplate,int type)  
     {  
         ContentValues values = new ContentValues();  

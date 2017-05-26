@@ -17,12 +17,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
 public class RecordFragment extends Fragment {
 	public static final int TYPE_CURRENT_RECORD = 101;
 	public static final int TYPE_HISTORY_RECORD = 102;
 	private View mView;
 	private ListView mListView;
+	private TextView mEmptyNotifyTV;;
 	private int mType;
 	private boolean mEqual;
 	private UserDbAdapter mUserDbAdapter;
@@ -44,6 +46,7 @@ public class RecordFragment extends Fragment {
 	    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	    	mView = inflater.inflate(R.layout.fragment_record, container, false);
 	        mListView=(ListView)mView.findViewById(R.id.list_record);  
+	        mEmptyNotifyTV=(TextView)mView.findViewById(R.id.tv_empty_list_notify_record);  
 	        mUserDbAdapter = new UserDbAdapter(getActivity());
 	        List<Map<String, Object>> list=getData(mType);  
 	        mListView.setAdapter(new RecordListAdapter(getActivity(), list)); 
@@ -108,8 +111,8 @@ public class RecordFragment extends Fragment {
 	    	mUserDbAdapter.open();
 	    	Cursor cursor = mUserDbAdapter.getParkingDetailByPaymentPattern("未付",mEqual);
 	    	Log.e("yifan","count : " + cursor.getCount());
+	    	int count = 0;
 	        try {
-	        	int count = 0;
 	        	do{
 	        	    		  Map<String, Object> map=new HashMap<String, Object>();
 	        	    		  map.put("licensePlateNumber", cursor.getString(cursor.getColumnIndex("licenseplate")));
@@ -129,13 +132,16 @@ public class RecordFragment extends Fragment {
 	      		              list.add(map); 
 	      		              count++;
 	        	 }while(cursor.moveToNext());
-	        	 if(count==0){
-	        	     list.remove(titleMap); 
-	        	  }
 	        }
 	        catch (Exception e) {
 	                e.printStackTrace();
 	        } finally{
+	        	 if(count==0){
+	        	     list.remove(titleMap); 
+	     	    	Log.e("yifan","remove title");
+	     	    	mListView.setVisibility(View.GONE);
+	     	    	mEmptyNotifyTV.setVisibility(View.VISIBLE);
+	        	  }
 	            	if(cursor!=null){
 	            		cursor.close();
 	                }

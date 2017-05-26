@@ -51,17 +51,17 @@
         <activity
             android:name="com.example.driver.ParkingInformationActivity"
             android:theme="@style/LabelTheme"
-            android:label="收费界面">
+            android:label="停车信息">
         </activity>
         <activity
-            android:name="com.example.driver.LeavingActivity"
+            android:name="com.example.driver.PaymentActivity"
             android:theme="@style/LabelTheme"
-            android:label="收费确认界面">
+            android:label="收费确认">
         </activity>
         <activity
             android:name="com.example.driver.PaymentSuccessActivity"
             android:theme="@style/LabelTheme"
-            android:label="支付成功界面">
+            android:label="支付成功">
         </activity>
         <activity
             android:name="com.example.driver.MessageCenterActivity"
@@ -71,7 +71,8 @@
         <activity
             android:name="com.example.driver.FeedbackActivity"
             android:theme="@style/LabelTheme"
-            android:label="意见反馈">
+            android:label="意见反馈"
+            android:windowSoftInputMode="adjustPan|stateHidden"  >
         </activity>
          <activity
             android:name="com.example.driver.ParkingRecordActivity"

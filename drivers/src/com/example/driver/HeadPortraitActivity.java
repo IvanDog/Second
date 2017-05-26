@@ -89,7 +89,6 @@ public class HeadPortraitActivity extends Activity {
 	        //如果你想在Activity中得到新打开Activity关闭后返回的数据，
 	        //你需要使用系统提供的startActivityForResult(Intent intent,int requestCode)方法打开新的Activity
 	        startActivityForResult(intentFromGallery, CODE_GALLERY_REQUEST);
-	        
 	    }
 
 	    // 启动手机相机拍摄照片作为头像

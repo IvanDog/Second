@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>  
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-              android:background="#eee"  
-              android:layout_width="match_parent"  
-              android:layout_height="wrap_content"  
-              android:orientation="vertical">  
+      android:background="#eee"  
+      android:layout_width="match_parent"  
+      android:layout_height="wrap_content"  
+      android:orientation="vertical">  
   
     <LinearLayout  
         android:id="@+id/linear_location_title"
@@ -60,48 +60,170 @@
                 android:layout_width="wrap_content"  
                 android:layout_height="wrap_content"/> 
     </LinearLayout>
-     
+
       <FrameLayout
          android:id="@+id/frame_container"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
          android:layout_below="@+id/linear_location_title"
-         android:layout_above="@+id/linear_buttons_main"> 
-         <com.amap.api.maps2d.MapView
-             android:id="@+id/map"
+         android:layout_above="@+id/linear_buttons_main">
+         <RelativeLayout
+            android:id="@+id/relative_tabs_and_map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+              <LinearLayout 
+              android:id="@+id/linear_parking_type_tabs"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+              <TextView
+                  android:id="@+id/tv_all_parking_type"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="全部"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+              <TextView
+                  android:id="@+id/tv_outside_parking_type"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="路内"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+              <TextView
+                  android:id="@+id/tv_inside_parking_type"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="路外"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+           </LinearLayout> 
+           <com.amap.api.maps2d.MapView
+               android:id="@+id/map"
+               android:layout_below="@+id/linear_parking_type_tabs"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:clickable="true"
+               android:enabled="true" />
+       </RelativeLayout>
+       <Button 
+             android:id="@+id/bt_close_route"
+             android:layout_width="40dp"
+             android:layout_height="30dp"
+             android:background="@drawable/button_close_route"
+             android:textColor="#E94509"
+             android:layout_marginRight="15dp"
+             android:layout_marginBottom="0dp"
+             android:layout_gravity="right|bottom" 
+             android:textSize="15dp"
+             android:text="关闭"
+             android:visibility = "gone">
+         </Button>
+         <ListView   
+             android:id="@+id/list_search"  
+             android:layout_below="@+id/linear_location_title"
+             android:layout_above="@+id/linear_buttons_main"
              android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:clickable="true"
-             android:enabled="true" />
-         <TextView 
-             android:id="@+id/tv_poi_name"
-             android:layout_height="wrap_content" 
-             android:layout_width="wrap_content"
-             android:paddingTop="10dp"
-             android:paddingBottom="10dp"
-             android:paddingLeft="10dp"
-             android:paddingRight="10dp"
-             android:textSize="20sp"  />
-        <ListView   
-         android:id="@+id/list_search"  
-         android:layout_below="@+id/linear_location_title"
-         android:layout_above="@+id/linear_buttons_main"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:divider="#EBEBEB"        
-         android:dividerHeight="1px"
-         android:visibility="gone" />
+             android:layout_height="match_parent"
+             android:divider="#EBEBEB"        
+             android:dividerHeight="1px"
+             android:visibility="gone" />
+         <include
+           android:id="@+id/dialog_main"
+           android:layout_marginLeft="25dp"
+           android:layout_marginRight="25dp"
+           android:layout_marginBottom="25dp"
+           android:layout_gravity="left|bottom" 
+           android:visibility="gone"
+          layout="@layout/dialog_parking_information"/>
       </FrameLayout> 
+     <RelativeLayout 
+          android:id="@+id/relative_parking_list"  
+          android:layout_below="@+id/linear_location_title"
+          android:layout_above="@+id/linear_buttons_main"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:visibility="gone">
+         <LinearLayout 
+            android:id="@+id/linear_parking_type_tabs_parking_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+              <TextView
+                  android:id="@+id/tv_all_parking_type_parking_list"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="全部"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+              <TextView
+                  android:id="@+id/tv_outside_parking_type_parking_list"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="路内"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+              <TextView
+                  android:id="@+id/tv_inside_parking_type_parking_list"
+                  android:layout_width="0dip"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:gravity="center"
+                  android:text="路外"
+                  android:textSize="15sp"
+                  android:padding="2dp"
+                  android:background="#EBEBEB"
+                  android:textColor="@color/white" />
+          </LinearLayout> 
+          <ListView   
+             android:id="@+id/list_parking_list"  
+             android:layout_below="@+id/linear_parking_type_tabs_parking_list"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:divider="#FFF"        
+             android:dividerHeight="2px" />
+     </RelativeLayout>
+     <TextView
+        android:id="@+id/tv_notify_input_location_parking_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="暂未指定目的地"
+        android:textColor="#FFFFFF"
+        android:textSize="30dp"
+        android:visibility="gone"/>
+     <TextView
+        android:id="@+id/tv_empty_list_notify_parking_list_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="暂无附近停车场"
+        android:textColor="#FFFFFF"
+        android:textSize="30dp"
+        android:visibility="gone"/>
      <ListView   
-         android:id="@+id/list_main"  
-         android:layout_below="@+id/linear_location_title"
-         android:layout_above="@+id/linear_buttons_main"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:divider="#FFF"        
-         android:dividerHeight="2px" 
-         android:visibility="gone"/>
-       <ListView   
          android:id="@+id/list_parking_detail"  
          android:layout_below="@+id/linear_location_title"
          android:layout_above="@+id/linear_buttons_main"
@@ -110,19 +232,22 @@
          android:divider="#EBEBEB"        
          android:dividerHeight="2px"
          android:visibility="gone" />
-          <include   
-              android:id="@+id/view_user_center"  
-              android:layout_below="@+id/linear_location_title"
-              android:layout_above="@+id/linear_buttons_main"
-              layout="@layout/view_user_center"
-              android:visibility="gone"/> 
-<!--       <View   
+     <TextView
+        android:id="@+id/tv_empty_list_notify_parking_detail_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="暂无未支付订单"
+        android:textColor="#FFFFFF"
+        android:textSize="30dp"
+        android:visibility="gone"/>
+      <include   
          android:id="@+id/view_user_center"  
          android:layout_below="@+id/linear_location_title"
          android:layout_above="@+id/linear_buttons_main"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:visibility="gone" /> -->
+         layout="@layout/view_user_center"
+         android:visibility="gone"/> 
      <LinearLayout
          android:id="@+id/linear_buttons_main"  
          android:layout_width="match_parent"

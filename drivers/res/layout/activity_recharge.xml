@@ -88,11 +88,15 @@
                     android:id="@+id/rb_alipay_payment_recharge"  
                     android:layout_width="wrap_content"  
                     android:layout_height="wrap_content"  
+                    android:drawableRight="@drawable/ic_alipay_32px"
+                    android:drawablePadding="5dp"
                     android:text="支付宝"/>  
                    <RadioButton  
                     android:id="@+id/rb_wechatpay_payment_recharge"  
                     android:layout_width="wrap_content"  
                     android:layout_height="wrap_content"  
+                    android:drawableRight="@drawable/ic_wechat_32px"
+                    android:drawablePadding="5dp"
                     android:text="微信"/>  
               </RadioGroup>  
 
@@ -107,14 +111,15 @@
           android:layout_alignParentBottom="true">
             <Button 
               android:id="@+id/bt_confirm_payment_leaving_recharge"
-              android:background = "@drawable/ic_ok"
-              android:layout_width="0dp"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_weight="1"
+              android:layout_marginLeft="10dp"
+              android:layout_marginRight="10dp"
+              android:layout_marginBottom="10dp"
               android:gravity="center"
               android:textColor="#E94509"
               android:text="确认支付" />
-            <Button 
+<!--             <Button 
               android:id="@+id/bt_cancel_payment_recharge"
               android:background = "@drawable/ic_ok"
               android:layout_width="0dp"
@@ -122,6 +127,6 @@
               android:layout_weight="1"
               android:gravity="center"
               android:textColor="#E94509"
-              android:text="取消" />
+              android:text="取消" /> -->
     </LinearLayout>
 </RelativeLayout>

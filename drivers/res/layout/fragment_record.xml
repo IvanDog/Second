@@ -9,6 +9,16 @@ android:orientation="vertical" >
         android:background="#EBEBEB"
         android:divider="#E94509"
         android:dividerHeight="1dp"
-        android:layout_height="wrap_content">
-    </ListView>
+        android:layout_height="wrap_content"
+        android:visibility="visible"/>
+    <TextView
+        android:id="@+id/tv_empty_list_notify_record"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:text="暂无停车记录"
+        android:textColor="#FFFFFF"
+        android:textSize="30dp"
+        android:visibility="gone"/>
 </LinearLayout>

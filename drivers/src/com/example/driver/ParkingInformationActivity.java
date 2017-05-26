@@ -63,7 +63,7 @@ public class ParkingInformationActivity extends Activity {
         mConfirmLeavingBT.setOnClickListener(new OnClickListener(){
         	@Override
         	public void onClick(View v){
-        		Intent intent = new Intent(ParkingInformationActivity.this,LeavingActivity.class);
+        		Intent intent = new Intent(ParkingInformationActivity.this,PaymentActivity.class);
 				Bundle bundle = new Bundle();
 				bundle.putLong("id", mID);
 				bundle.putString("telenumber", mTeleNumber);
