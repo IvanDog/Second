@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_parking_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+  <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+    <LinearLayout
+        android:id="@+id/linear_detail_list_parking_list"
+        android:layout_weight="4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <LinearLayout 
+            android:layout_weight="1"  
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:layout_height="0dp">
+            <TextView 
+                android:id="@+id/tv_parkingname"
+                android:layout_weight="3"  
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_parking_name_24px"
+                android:drawablePadding="2dp"
+                android:singleLine="true"
+                android:textColor="#E94509"
+                android:textSize="12sp" />
+            <TextView 
+                android:id="@+id/tv_distance"
+                android:layout_weight="1"  
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#E94509"
+                android:text="100米"
+                android:textSize="12sp" />
+        </LinearLayout>
+        <TextView 
+            android:id="@+id/tv_location"
+            android:layout_weight="1"  
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="12sp" 
+            android:maxEms="10"
+            android:singleLine="true"
+            android:ellipsize="end"/>
+    <LinearLayout 
+        android:layout_weight="1"  
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <TextView 
+            android:id="@+id/tv_parkingnumber"
+            android:layout_weight="1"  
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_parking_idle_24px"
+            android:drawablePadding="-10dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="10sp" />
+        <TextView 
+            android:id="@+id/tv_fee"
+            android:layout_weight="1"  
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_unit_price_24px"
+            android:drawablePadding="-7dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="10sp" />
+        <TextView 
+            android:id="@+id/tv_parking_details"
+            android:layout_weight="1"  
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:textSize="10sp" 
+            android:clickable="true"
+            android:text="详情"/>
+    </LinearLayout>
+ </LinearLayout>
+ 
+     <LinearLayout
+           android:id="@+id/linear_navigation"
+           android:layout_weight="1"  
+           android:layout_width="0dp"
+           android:paddingLeft="5dp"
+           android:paddingRight="5dp"
+           android:layout_height="match_parent"
+           android:orientation="horizontal" >
+            <ImageButton 
+                android:layout_width="wrap_content"  
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_navigation_24px" />
+            <TextView 
+                android:layout_height="match_parent" 
+                android:layout_width="wrap_content"  
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:text="导航"  />
+  </LinearLayout>
+  </LinearLayout>
+  <include layout="@layout/list_parking_list_hide"/>
+</LinearLayout>
