@@ -1,8 +1,13 @@
 package com.example.driver;
 
+import com.amap.api.services.help.Inputtips;
+import com.amap.api.services.help.InputtipsQuery;
 import com.example.driver.R.color;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,8 +16,11 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -89,7 +97,25 @@ public class InputLicenseActivity extends FragmentActivity {
     	          return false;
     	      }
     	    });
-    	mLicensePlateET.setInputType(InputType.TYPE_NULL);  
+    	mLicensePlateET.setInputType(InputType.TYPE_NULL);
+    	mLicensePlateET.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            	if(mLicensePlateET.getText()!=null && mLicensePlateET.getText().length()>LICENSE_PLATE_NUMBER_SIZE){
+            		Message msg = new Message();
+            		msg.what=EVENT_INVALID_LICENSE_PLATE;
+            		mHandler.sendMessage(msg);
+            	}
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+            }
+    	});
+    
     	mConfirmBT.setOnClickListener(new Button.OnClickListener(){
 			public void onClick(View v){
 				if(mLicensePlateET.getText().length() !=LICENSE_PLATE_NUMBER_SIZE){
@@ -102,6 +128,10 @@ public class InputLicenseActivity extends FragmentActivity {
 			}
 		});
     	getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 
 	private void changeFragment(int resId) {  
@@ -255,4 +285,21 @@ public class InputLicenseActivity extends FragmentActivity {
 	    return super.onOptionsItemSelected(item);  
 	  }  
 	
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
+    
 }

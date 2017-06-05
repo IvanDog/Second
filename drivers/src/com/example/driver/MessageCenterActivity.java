@@ -8,7 +8,10 @@ import java.util.Map;
 import com.example.driver.R.drawable;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +39,10 @@ public class MessageCenterActivity extends Activity {
             }
         });
 		getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 
     public List<Map<String, Object>> getData(){  
@@ -65,6 +72,22 @@ public class MessageCenterActivity extends Activity {
 	    return super.onOptionsItemSelected(item);  
 	  }  
 	
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 	/**
 	 * Add for request message
 	public void requestMessage()throws ParseException, IOException, JSONException{

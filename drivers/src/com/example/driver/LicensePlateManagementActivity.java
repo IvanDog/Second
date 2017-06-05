@@ -3,8 +3,10 @@ package com.example.driver;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -83,6 +85,10 @@ public class LicensePlateManagementActivity extends Activity {
         new DisplayThread().start();
         Log.e("yifan","DisplayThread is starting");
     	getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 	
 	public void onResume(){
@@ -219,5 +225,22 @@ public class LicensePlateManagementActivity extends Activity {
 	             break;  
 	    }  
 	    return super.onOptionsItemSelected(item);  
-	  }  
+	  }
+	
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }

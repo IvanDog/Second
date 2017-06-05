@@ -11,7 +11,10 @@ import com.example.driver.R.drawable;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -54,6 +57,10 @@ public class ParkingCouponActivity extends FragmentActivity {
         List<Map<String, Object>> list=getData();  
         mListView.setAdapter(new ParkingCouponAdapter(this, list)); 
 		getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 
     public List<Map<String, Object>> getData(){  
@@ -109,4 +116,20 @@ public class ParkingCouponActivity extends FragmentActivity {
 	    return super.onOptionsItemSelected(item);  
 	  }  
 	
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }

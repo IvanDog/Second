@@ -5,7 +5,10 @@ import java.util.Date;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -54,6 +57,10 @@ public class ParkingRecordActivity extends FragmentActivity {
         changeSelect(R.id.tv_record_current);
         changeFragment(R.id.tv_record_current);
 		getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 
 	private void changeFragment(int resId) {  
@@ -115,4 +122,21 @@ public class ParkingRecordActivity extends FragmentActivity {
             }
         }
     };
+    
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }

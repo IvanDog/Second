@@ -8,8 +8,10 @@ import java.util.Map;
 import com.example.driver.R.drawable;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -86,6 +88,10 @@ public class UserInformationActivity extends Activity {
         });
         new UpdateDisplayThread().start();
 		getActionBar().setDisplayHomeAsUpEnabled(true); 
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 	
     public List<Map<String, Object>> getUserInformationData(){  
@@ -223,4 +229,21 @@ public class UserInformationActivity extends Activity {
 	    }  
 	    return super.onOptionsItemSelected(item);  
 	  }  
+	
+	 private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+					finish();
+				}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+					finish();
+				}
+			}            
+	    };
+	    
+	    @Override
+	    protected void onDestroy() {
+	        super.onDestroy();
+	        unregisterReceiver(mReceiver);
+	    }
 }

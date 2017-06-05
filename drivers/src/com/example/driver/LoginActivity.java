@@ -573,6 +573,7 @@ public class LoginActivity extends Activity {
 				bundle.putString("telenumber", userinfo);
 				intent.putExtras(bundle);
 				startActivity(intent);
+				finish();
 			} else {
 			  if(mErrorType == ERROR_TYPE_EMPTY_TELE){
 					mTeleNumberET.setError(getString(R.string.error_empty_tele));
@@ -602,7 +603,7 @@ public class LoginActivity extends Activity {
         	    mUserDbAdapter.open();
         	    mUserDbAdapter.deleteAllParkingDetail();
             	String licensePlate = "津HG9025";
-            	String teleNumber = "13512494993";
+            	String teleNumber = mTeleNumberET.getText().toString();
             	String carType = "小客车";
             	String parkingType = "普通停车";
             	String parkingName = "天津市-津南区-易华录停车场";

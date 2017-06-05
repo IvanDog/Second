@@ -67,9 +67,11 @@ import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -149,6 +151,7 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
 	private MapView mapView;//地图控件
 	private AMap mAMAP;//地图控制器对象
 
+    private long mExitTime = 0;
 	/**
  	 *      定位需要的声明g
  	 */
@@ -734,6 +737,10 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
                  }
              }
          });
+         IntentFilter filter = new IntentFilter();  
+         filter.addAction("ExitApp");  
+         filter.addAction("BackMain");  
+         registerReceiver(mReceiver, filter);
     }
     
 	/**
@@ -1051,7 +1058,7 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
                     //aMap.addMarker(getMarkerOptions(amapLocation));
                     //获取定位信息
                     StringBuffer buffer = new StringBuffer();
-                    buffer.append(amapLocation.getCountry() + "" + amapLocation.getProvince() + "" + amapLocation.getCity() + "" + amapLocation.getProvince() + "" + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
+                    buffer.append(amapLocation.getCity() + ""  + amapLocation.getDistrict() + "" + amapLocation.getStreet() + "" + amapLocation.getStreetNum());
                     Toast.makeText(getApplicationContext(), buffer.toString(), Toast.LENGTH_SHORT).show();
                     isFirstLoc = false;
                 }
@@ -1132,12 +1139,13 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
     }
     
     /**
-     * 销毁地图
+     * 销毁地图、取消注册
      */
     @Override
     protected void onDestroy() {
        super.onDestroy();
        mapView.onDestroy();
+       unregisterReceiver(mReceiver);
     }
     
     @Override
@@ -1785,6 +1793,9 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
         exitDialog.setPositiveButton("确定",new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Intent intentFinsh = new Intent();  
+                intentFinsh.setAction("ExitApp");  
+                sendBroadcast(intentFinsh); 
 				Intent intent = new Intent(MainActivity.this,LoginActivity.class);
 				startActivity(intent);
 				finish();
@@ -1799,6 +1810,42 @@ AMap.OnInfoWindowClickListener,AMap.InfoWindowAdapter,AMap.OnMarkerClickListener
         exitDialog.show();
     }
     
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){   
+            if((System.currentTimeMillis() - mExitTime) > 2000){  
+                Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();                                
+                mExitTime = System.currentTimeMillis();   
+            } else {
+                Intent intentFinsh = new Intent();  
+                intentFinsh.setAction("ExitApp");  
+                sendBroadcast(intentFinsh); 
+                exit();
+                System.exit(0);
+            }
+            return true;   
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    
+    public void exit(){
+    	Intent startMain = new Intent(Intent.ACTION_MAIN);
+    	startMain.addCategory(Intent.CATEGORY_HOME);
+    	startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	startActivity(startMain);
+    	android.os.Process.killProcess(android.os.Process.myPid());
+    }
 	/**
 	 * 停车信息对话框
 	 */

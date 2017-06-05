@@ -4,9 +4,11 @@ import com.example.driver.R.drawable;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -117,10 +119,12 @@ public class RechargeActivity extends Activity {
 		        	mPaymentType = PAYMENT_TYPE_ALIPAY; 
 			    }else if (mWechatpayPaymentRB.getId() == checkedId){
 		        	mPaymentType = PAYMENT_TYPE_WECHATPAY; 
-			    } 
+			    }
+                mConfirmPaymentBT.setEnabled(true);
 			  } 
 			});
 		mConfirmPaymentBT=(Button)findViewById(R.id.bt_confirm_payment_leaving_recharge);
+		mConfirmPaymentBT.setEnabled(false);
 		mConfirmPaymentBT.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v){
@@ -140,6 +144,10 @@ public class RechargeActivity extends Activity {
         });*/
 		new WalletThread().start();
 		 getActionBar().setDisplayHomeAsUpEnabled(true);
+	     IntentFilter filter = new IntentFilter();  
+	     filter.addAction("ExitApp");  
+	     filter.addAction("BackMain");  
+	     registerReceiver(mReceiver, filter);
 	}
 
 	private Handler mHandler = new Handler() {
@@ -230,4 +238,21 @@ public class RechargeActivity extends Activity {
 	    }  
 	    return super.onOptionsItemSelected(item);  
 	  }  
+	
+    private BroadcastReceiver mReceiver = new BroadcastReceiver(){  
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if(intent.getAction()!=null && intent.getAction().equals("ExitApp")){
+				finish();
+			}else if(intent.getAction()!=null && intent.getAction().equals("BackMain")){
+				finish();
+			}
+		}            
+    };
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
 }
