@@ -11,6 +11,8 @@
         android:paddingBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:focusable="true"  
+        android:focusableInTouchMode="true"
         android:textSize="20sp"
         android:text="@string/resetpasswd"
         android:drawableLeft="@drawable/ic_lock_open_black_36dp"/>
@@ -99,10 +101,9 @@
         android:id="@+id/linear_reset_buttons"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/linear_renew_passwd"
         android:layout_alignParentBottom="true"
         android:paddingBottom="30dp"
-        android:gravity="center"
+        android:gravity="bottom"
         android:orientation="horizontal" >
             <Button 
               android:id="@+id/bt_confirm_reset_passwd"

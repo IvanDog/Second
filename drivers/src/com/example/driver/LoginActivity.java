@@ -1,5 +1,7 @@
 package com.example.driver;
 
+import cn.smssdk.EventHandler;
+import cn.smssdk.SMSSDK;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -53,8 +55,8 @@ public class LoginActivity extends Activity {
 	private UserLoginTask mAuthTask = null;
 
 	// Values for email and password at the time of the login attempt.
-	private String mTeleNumber = null;
-	private String mPassword;
+	private String mTeleNumber = "";
+	private String mPassword = "";
 
 	// UI references.
 	private EditText mTeleNumberET;
@@ -73,11 +75,12 @@ public class LoginActivity extends Activity {
 	private Thread mTimeThread;
 	private  boolean mUpdateTime =true;
 	private int mThreadTime = 60;
+	private boolean mForget = false;
     private static final String SAVE_FILE_NAME = "save_spref";
     private static final int EVENT_EXIST_NUMBER=101;
     private static final int EVENT_EMPTY_TELE_NUMBER=102;
     private static final int EVENT_EMPTY_VERIFICATION_CODE=103;
-    private static final int EVENT_REGISTER_SUCCESS=104;
+    private static final int EVENT_VERIFY_SUCCESS=104;
     private static final int EVENT_EMPTY_PASSWD=105;
     private static final int EVENT_EMPTY_RE_PASSWD=106;
     private static final int EVENT_INCONSISTENT_PASSWD=107;
@@ -92,11 +95,21 @@ public class LoginActivity extends Activity {
 	
 	private static final int EVENT_UPDATE_TIME=501;
 	private int mErrorType = ERROR_TYPE_NO_ERROR;
+	
+	 //这是中国区号，如果需要其他国家列表，可以使用getSupportedCountries();获得国家区号
+	 public String mCountryCode = "86";
+	 //APPKEY
+	 private static String mAppKey = "1e7a74a047212";
+	 // 填写从短信SDK应用后台注册得到的APPSECRET
+	 private static String mAppSecret = "ef9ba13e14556233ac852e66bcb1fd4e";
+	 //表示是否使用了registerEventHandler
+	 private boolean ready;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mUserDbAdapter = new UserDbAdapter(this);
 		setContentView(R.layout.activity_login);
+		initSDK();
 		mTeleNumberET = (EditText) findViewById(R.id.et_tele_login);
 		mTeleNumberET.setText(mTeleNumber);
 
@@ -164,6 +177,53 @@ public class LoginActivity extends Activity {
         initView();
 	}
 
+	 // 初始化短信SDK
+	 private void initSDK() {
+		SMSSDK.initSDK(this, mAppKey, mAppSecret);//初始化SDK 
+	    EventHandler eventHandler = new EventHandler() {
+	       public void afterEvent(int event, int result, Object data) {
+	        if (result == SMSSDK.RESULT_COMPLETE) {  //回调完成
+	            if (event == SMSSDK.EVENT_SUBMIT_VERIFICATION_CODE){  //验证码验证成功
+            		  Message msg = new Message();
+            		  msg.what = EVENT_VERIFY_SUCCESS;
+            		  mHandler.sendMessage(msg);
+            		  mDialog.dismiss();
+            		  toastWrapper("验证成功");
+	              }else if (event == SMSSDK.EVENT_GET_VERIFICATION_CODE){  //已发送验证码
+	            	  toastWrapper("验证码已经发送");
+	              } else{
+	                   ((Throwable) data).printStackTrace();
+	                   String str = data.toString();
+	                   //toastWrapper(str);
+	              }
+	        }
+	        if(result==SMSSDK.RESULT_ERROR) {  //验证码验证失败
+	        	toastWrapper("验证码错误");
+	        }
+	      }
+	  };
+	    SMSSDK.registerEventHandler(eventHandler);// 去注册验证码回调监听接口
+	    ready = true;
+	 }
+	 
+	 //销毁短信注册
+	 @Override
+	 protected void onDestroy() {
+	      if(ready){
+	          SMSSDK.unregisterAllEventHandler();// 去注册短信验证码回调监听接口
+	      }
+	      super.onDestroy();
+	 }
+	 
+	 //封装Toast
+	 private void toastWrapper(final String str) {
+	      runOnUiThread(new Runnable() {
+	          @Override
+	           public void run() {
+	               Toast.makeText(LoginActivity.this, str, Toast.LENGTH_SHORT).show();
+	           }
+	      });
+	 }
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
@@ -227,11 +287,24 @@ public class LoginActivity extends Activity {
                 case EVENT_EMPTY_VERIFICATION_CODE:
                 	Toast.makeText(getApplicationContext(), "验证码不可为空", Toast.LENGTH_SHORT).show();
                     break;
-                case EVENT_REGISTER_SUCCESS:
-                    showSetPasswdDialog(false);
-                    mUpdateTime=false;
-                    mApplyVerificationCodeBT.setText("验证码");
-                    mApplyVerificationCodeBT.setEnabled(true);
+                case EVENT_VERIFY_SUCCESS:
+                	if(mForget){
+                		showSetPasswdDialog(true);
+                	}else{
+                		mUserDbAdapter.open();
+                    	long  result = mUserDbAdapter.insertDriver(mTeleNumber, null, null, null, 0, 10, null, null);
+                    	if(result != -1){
+                    		Log.e("yifan","insert ok");
+                            showSetPasswdDialog(false);
+                            mUpdateTime=false;
+                            mApplyVerificationCodeBT.setText("验证码");
+                            mApplyVerificationCodeBT.setEnabled(true);
+                    	}else{
+                    		Log.e("yifan","insert fail");
+                    	}
+                    	mUserDbAdapter.close();
+                	}
+                	mForget = false;
                 	break;
                 case EVENT_EMPTY_PASSWD:
                 	Toast.makeText(getApplicationContext(), "密码不可为空", Toast.LENGTH_SHORT).show();
@@ -256,6 +329,7 @@ public class LoginActivity extends Activity {
     };
     
     public void showRegisterDialog(final boolean forget){
+    	mForget = forget;
 		LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
 		View view = inflater.inflate(R.layout.dialog_verification_code, null); // 加载自定义的布局文件
 		final EditText teleNumberET = (EditText)view.findViewById(R.id.et_input_tele_number);
@@ -294,9 +368,19 @@ public class LoginActivity extends Activity {
             		mHandler.sendMessage(msg);
             	}else if((mUserDbAdapter.getUser(teleNumberET.getText().toString())).getCount()!=0){
             		if(forget){
-            			mDialog.dismiss();
             			mTeleNumber = teleNumberET.getText().toString();
-            			showSetPasswdDialog(true);
+            			/*
+            			 * 注释用于调试
+            			 */
+                		//SMSSDK.submitVerificationCode( mCountryCode, mTeleNumber, verificationCodeET.getText().toString());
+            			/*
+            			 * 添加以下代码用于调试
+            			 */
+              		  Message msg = new Message();
+              		  msg.what = EVENT_VERIFY_SUCCESS;
+              		  mHandler.sendMessage(msg);
+              		  mDialog.dismiss();
+              		  toastWrapper("验证成功");
             		}else{
                 		Message msg = new Message();
                 		msg.what = EVENT_EXIST_NUMBER;
@@ -309,16 +393,18 @@ public class LoginActivity extends Activity {
                 		mHandler.sendMessage(msg);
             		}else{
                 		mTeleNumber = teleNumberET.getText().toString();
-                    	long  result = mUserDbAdapter.insertDriver(teleNumberET.getText().toString(), null, null, null, 0, 10, null, null);
-                    	if(result != -1){
-                    		Log.e("yifan","insert ok");
-                    		Message msg = new Message();
-                    		msg.what = EVENT_REGISTER_SUCCESS;
-                    		mHandler.sendMessage(msg);
-                    		mDialog.dismiss();
-                    	}else{
-                    		Log.e("yifan","insert fail");
-                    	}
+            			/*
+            			 * 注释用于调试
+            			 */
+                		//SMSSDK.submitVerificationCode( mCountryCode, mTeleNumber, verificationCodeET.getText().toString());
+            			/*
+            			 * 添加以下代码用于调试
+            			 */
+              		  Message msg = new Message();
+              		  msg.what = EVENT_VERIFY_SUCCESS;
+              		  mHandler.sendMessage(msg);
+              		  mDialog.dismiss();
+              		  toastWrapper("验证成功");
             		}
             	}
             	mUserDbAdapter.close(); 
@@ -347,6 +433,15 @@ public class LoginActivity extends Activity {
 		mApplyVerificationCodeBT.setOnClickListener(new OnClickListener() {
 			@Override
 		    public void onClick(View v) {
+    			/*
+    			 * 注释用于调试
+    			 */
+				//SMSSDK.getVerificationCode(mCountryCode, teleNumberET.getText().toString());//获取验证码
+    			/*
+    			 * 添加以下代码用于调试
+    			 */
+      		    toastWrapper("验证码已发送");
+      		    
 				mApplyVerificationCodeBT.setEnabled(false);
 				mUpdateTime=true;
 				mTimeThread=new TimeThread();
@@ -365,6 +460,7 @@ public class LoginActivity extends Activity {
 		final Button finishRegisterButton=(Button)view.findViewById(R.id.bt_finish_register);
 		final AlertDialog.Builder VCdialogBuilder = new AlertDialog.Builder(LoginActivity.this);
 		VCdialogBuilder.setView(view); // 自定义dialog
+		VCdialogBuilder.setCancelable(false);//点击对话框外面的区域无效
 		finishRegisterButton.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v){
@@ -405,6 +501,7 @@ public class LoginActivity extends Activity {
 		mDialog = VCdialogBuilder.create();
 		mDialog.show();
     }
+    
 	/**
 	 * Attempts to sign in or register the account specified by the login form.
 	 * If there are form errors (invalid email, missing fields, etc.), the
@@ -427,8 +524,16 @@ public class LoginActivity extends Activity {
 		View focusView = null;
 
 		// Check for a valid password.
-		if (TextUtils.isEmpty(mPassword)) {
-			mPasswordView.setError(getString(R.string.error_field_required));
+		if (TextUtils.isEmpty(mTeleNumber)) {
+			mTeleNumberET.setError(getString(R.string.error_tele_number_field_required));
+			focusView = mTeleNumberET;
+			cancel = true;
+		}else if (mTeleNumberET.length() != 11) {
+			mTeleNumberET.setError(getString(R.string.error_invalid_tele_number));
+			focusView = mTeleNumberET;
+			cancel = true;
+		}else if (TextUtils.isEmpty(mPassword)) {
+			mPasswordView.setError(getString(R.string.error_passwd_field_required));
 			focusView = mPasswordView;
 			cancel = true;
 		} else if (mPassword.length() < 4) {
@@ -536,10 +641,14 @@ public class LoginActivity extends Activity {
 			mUserDbAdapter.open();
 			Cursor cursor = mUserDbAdapter.getUser();
 			do{
-				String teleNumber = cursor.getString(cursor.getColumnIndex("telenumber"));
-				String passwd = cursor.getString(cursor.getColumnIndex("passwd"));
-				if(teleNumber.equals(mTeleNumber)){
-					if(passwd.equals(mPassword)){
+				String teleNumber = "";
+				String passwd = "";
+				if(cursor.getCount()!=0){
+					teleNumber = cursor.getString(cursor.getColumnIndex("telenumber"));
+					passwd = cursor.getString(cursor.getColumnIndex("passwd"));
+				}
+				if(mTeleNumber.equals(teleNumber)){
+					if(mPassword.equals(passwd)){
 						return true;
 					}else{
 						mErrorType = ERROR_TYPE_PASSWD;

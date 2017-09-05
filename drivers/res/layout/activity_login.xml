@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:background = "@drawable/ic_background_login"
+        android:background = "@drawable/ic_background_login_driver"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -33,13 +33,15 @@
 
     <ScrollView
         android:id="@+id/login_form"
-        android:background = "@drawable/ic_background_login"
+        android:background = "@drawable/ic_background_login_driver"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
             style="@style/LoginFormContainer"
             android:layout_gravity="bottom"
+            android:focusable="true"  
+            android:focusableInTouchMode="true"
             android:orientation="vertical">
 
             <EditText

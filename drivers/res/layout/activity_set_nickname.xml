@@ -29,6 +29,8 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
+        android:focusable="true"  
+        android:focusableInTouchMode="true"
         android:orientation="vertical" >
               <EditText
                 android:id="@+id/et_set_nickname"

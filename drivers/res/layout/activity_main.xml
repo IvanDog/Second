@@ -27,7 +27,9 @@
         <FrameLayout  
             android:layout_weight="4"  
             android:layout_width="0dp"  
-            android:layout_height="wrap_content">  
+            android:layout_height="wrap_content"
+            android:focusable="true"  
+            android:focusableInTouchMode="true">  
             <AutoCompleteTextView  
                 android:id="@+id/ac_search_input"  
                 android:layout_gravity="center_vertical"  
